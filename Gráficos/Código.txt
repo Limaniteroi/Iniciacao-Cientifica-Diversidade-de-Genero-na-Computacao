@@ -1,0 +1,58 @@
+function GeneroxAnoxEstudantes() {
+ 
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheetDados = ss.getSheetByName("Transferidos"); // Aba com os dados
+  var sheetResumo = ss.getSheetByName("Genero x Ano"); // Aba onde será inserido o resultado
+  var range = sheetDados.getDataRange().getValues(); // Obtém os dados 
+
+  // Agrupar por Ano e por condições de Homem, Mulher e Não-Binário, fazendo uma lista de somatório
+
+  var colCondicao = 2; // Índice da coluna onde a condição será verificada de genero
+  var colCondicao2 = 1;
+  var colunasSomar = 5; // Índice da coluna cujos valores serão somados 
+  var condicao_genero = ["Feminino","FEMININO","Masculino", "MASCULINO","Não-Binário"];
+  var somaTotal = [0,0,0];
+  var condicao_ano = ["2019/1","2019/2", "2020/1", "2020/2", "2021/1", "2021/2", "2022/1", 
+  "2022/2", "2023/1", "2023/2", "2024/1", "2024/2"];
+
+
+  // Colocar nas primeiras linhas da coluna A, os anos 3 vezes e na coluna respectiva da quantidade de alunos
+
+  var comeco = 2;
+
+  for(var j = 0; j < 12; j++){
+
+    somaTotal = [0,0,0];
+    // Colocar na coluna C, os totais coletados de cada genero
+
+    for (var i = 1; i < range.length; i++) { // Começa em 1 para ignorar cabeçalho
+
+      if(range[i][0] == "31 - CIÊNCIA DA COMPUTAÇÃO" || range[i][0] == "83 - SISTEMAS DE INFORMAÇÃO"){
+
+        if((range[i][colCondicao] == condicao_genero[0] || range[i][colCondicao] == condicao_genero[1]) && (range[i][colCondicao2] == condicao_ano[j])){
+          somaTotal[0] += Number(range[i][colunasSomar]); // Soma os valores
+        }
+        else if((range[i][colCondicao] == condicao_genero[2] || range[i][colCondicao] == condicao_genero[3]) && (range[i][colCondicao2] == condicao_ano[j])){
+          somaTotal[1] += Number(range[i][colunasSomar]);
+        }
+        else if(range[i][colCondicao] == condicao_genero[4] && range[i][colCondicao2] == condicao_ano[j]) {
+          somaTotal[2] += Number(range[i][colunasSomar]);
+        }
+      }
+      
+    }
+
+    sheetResumo.getRange("A" + comeco).setValue(condicao_ano[j]);
+    sheetResumo.getRange("B" + comeco).setValue(somaTotal[0]);
+    sheetResumo.getRange("C" + comeco).setValue(somaTotal[1]);
+    sheetResumo.getRange("D" + comeco).setValue(somaTotal[2]);
+
+    comeco+=1;
+  
+  }
+  // Colocar nas primeiras linhas da coluna B, C e D, os generos por ano
+
+  sheetResumo.getRange("B1").setValue(condicao_genero[0]);
+  sheetResumo.getRange("C1").setValue(condicao_genero[2]);
+  sheetResumo.getRange("D1").setValue(condicao_genero[4]);
+
